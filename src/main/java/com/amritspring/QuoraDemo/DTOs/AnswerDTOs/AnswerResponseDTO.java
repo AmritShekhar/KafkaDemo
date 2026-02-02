@@ -1,4 +1,4 @@
-package com.amritspring.QuoraDemo.DTOs;
+package com.amritspring.QuoraDemo.DTOs.AnswerDTOs;
 
 import lombok.*;
 
@@ -9,9 +9,8 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class QuestionResponseDTO {
-    private String questionId;
-    private String title;
+public class AnswerResponseDTO {
+    private String answerId;
     private String content;
     private Instant createdAt;
 }

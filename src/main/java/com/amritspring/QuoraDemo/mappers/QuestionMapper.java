@@ -1,7 +1,7 @@
 package com.amritspring.QuoraDemo.mappers;
 
-import com.amritspring.QuoraDemo.DTOs.QuestionRequestDTO;
-import com.amritspring.QuoraDemo.DTOs.QuestionResponseDTO;
+import com.amritspring.QuoraDemo.DTOs.QuestionDTOs.QuestionRequestDTO;
+import com.amritspring.QuoraDemo.DTOs.QuestionDTOs.QuestionResponseDTO;
 import com.amritspring.QuoraDemo.models.Question;
 
 public class QuestionMapper {

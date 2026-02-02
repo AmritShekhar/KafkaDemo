@@ -1,10 +1,11 @@
 package com.amritspring.QuoraDemo.services;
 
-import com.amritspring.QuoraDemo.DTOs.QuestionRequestDTO;
-import com.amritspring.QuoraDemo.DTOs.QuestionResponseDTO;
+import com.amritspring.QuoraDemo.DTOs.QuestionDTOs.QuestionRequestDTO;
+import com.amritspring.QuoraDemo.DTOs.QuestionDTOs.QuestionResponseDTO;
 import com.amritspring.QuoraDemo.mappers.QuestionMapper;
 import com.amritspring.QuoraDemo.repositories.IQuestionRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -42,7 +43,10 @@ public class ReactiveMongoQuestionServiceImpl implements IQuestionService {
         return this.questionRepository
                 .findAll()
                 .map(QuestionMapper::toDTO)
-                .doOnError(error -> System.out.println("Service -> Error while fetching questions: " + error));
+                .doOnError(error -> System.out.println("Service -> Error while fetching questions: " + error))
+                .doOnComplete(
+                        () -> System.out.println("Service -> Questions fetched successfully!")
+                );
     }
 
     @Override
@@ -57,10 +61,16 @@ public class ReactiveMongoQuestionServiceImpl implements IQuestionService {
 
     @Override
     public Flux<QuestionResponseDTO> searchQuestionsUsingOffsetBasedPagination(
-            String text,
-            int page,
-            int size
+            String searchText,
+            int pageNumber,
+            int pageSize
     ) {
-        return null;
+        return this.questionRepository
+                .findByTitleOrContentContainingIgnoreCase(searchText, PageRequest.of(pageNumber, pageSize))
+                .map(QuestionMapper::toDTO)
+                .doOnError(error -> System.out.println("Service -> Error while fetching questions: " + error))
+                .doOnComplete(
+                        () -> System.out.println("Service -> Questions fetched successfully!")
+                );
     }
 }
