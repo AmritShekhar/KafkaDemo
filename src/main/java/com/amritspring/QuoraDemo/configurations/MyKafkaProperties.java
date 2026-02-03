@@ -9,10 +9,11 @@ import org.springframework.stereotype.Component;
 @Setter
 @Component
 @ConfigurationProperties(prefix = "myapp.kafka")
-public class KafkaProperties {
+public class MyKafkaProperties {
     private String bootstrapServers;
     private Consumer consumer;
     private String topic;
+    private Integer concurrency;
 
     @Getter
     @Setter

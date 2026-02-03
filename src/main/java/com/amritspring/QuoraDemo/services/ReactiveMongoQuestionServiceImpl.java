@@ -2,7 +2,10 @@ package com.amritspring.QuoraDemo.services;
 
 import com.amritspring.QuoraDemo.DTOs.QuestionDTOs.QuestionRequestDTO;
 import com.amritspring.QuoraDemo.DTOs.QuestionDTOs.QuestionResponseDTO;
+import com.amritspring.QuoraDemo.enums.TargetType;
+import com.amritspring.QuoraDemo.events.ViewCountEvent;
 import com.amritspring.QuoraDemo.mappers.QuestionMapper;
+import com.amritspring.QuoraDemo.producers.KafkaEventProducer;
 import com.amritspring.QuoraDemo.repositories.IQuestionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -10,11 +13,14 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.Instant;
+
 @Service
 @RequiredArgsConstructor
 public class ReactiveMongoQuestionServiceImpl implements IQuestionService {
 
     private final IQuestionRepository questionRepository;
+    private final KafkaEventProducer kafkaEventProducer;
 
     @Override
     public Mono<QuestionResponseDTO> createQuestion(QuestionRequestDTO questionRequestDTO) {
@@ -33,9 +39,12 @@ public class ReactiveMongoQuestionServiceImpl implements IQuestionService {
                 .findById(id)
                 .map(QuestionMapper::toDTO)
                 .doOnSuccess(
-                        response -> System.out.println("Service -> Question fetched successfully: " + response)
-                )
-                .doOnError(error -> System.out.println("Service -> Error while fetching question: " + error));
+                        response -> {
+                            System.out.println("Service -> Question fetched successfully: " + response);
+                            ViewCountEvent viewCountEvent = new ViewCountEvent(id, TargetType.QUESTION, Instant.now());
+                            this.kafkaEventProducer.publishViewCountEvent(viewCountEvent);
+                        }
+                ).doOnError(error -> System.out.println("Service -> Error while fetching question: " + error));
     }
 
     @Override

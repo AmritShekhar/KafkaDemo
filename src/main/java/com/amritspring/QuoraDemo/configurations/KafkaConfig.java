@@ -21,12 +21,12 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class KafkaConfig {
 
-    private final KafkaProperties kafkaProperties;
+    private final MyKafkaProperties myKafkaProperties;
 
     @Bean
     public ProducerFactory<String, Object> producerFactory() {
         Map<String, Object> configProps = new HashMap<>();
-        configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getBootstrapServers());
+        configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, myKafkaProperties.getBootstrapServers());
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
         return new DefaultKafkaProducerFactory<>(configProps);
@@ -35,10 +35,11 @@ public class KafkaConfig {
     @Bean
     public ConsumerFactory<String, Object> consumerFactory() {
         Map<String, Object> configProps = new HashMap<>();
-        configProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getBootstrapServers());
-        configProps.put(ConsumerConfig.GROUP_ID_CONFIG, kafkaProperties.getConsumer().getGroupId());
+        configProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, myKafkaProperties.getBootstrapServers());
+        configProps.put(ConsumerConfig.GROUP_ID_CONFIG, myKafkaProperties.getConsumer().getGroupId());
         configProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         configProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
+        configProps.put(JsonDeserializer.TRUSTED_PACKAGES, "com.amritspring.QuoraDemo.events");
         return new DefaultKafkaConsumerFactory<>(configProps);
     }
 
@@ -51,6 +52,7 @@ public class KafkaConfig {
     public ConcurrentKafkaListenerContainerFactory<String, Object> kafkaListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, Object> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
+        factory.setConcurrency(myKafkaProperties.getConcurrency());
         return factory;
     }
 }
