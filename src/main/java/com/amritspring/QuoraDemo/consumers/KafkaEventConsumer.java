@@ -1,6 +1,5 @@
-package com.amritspring.QuoraDemo.cosumers;
+package com.amritspring.QuoraDemo.consumers;
 
-import com.amritspring.QuoraDemo.configurations.MyKafkaProperties;
 import com.amritspring.QuoraDemo.events.ViewCountEvent;
 import com.amritspring.QuoraDemo.repositories.IQuestionRepository;
 import lombok.RequiredArgsConstructor;

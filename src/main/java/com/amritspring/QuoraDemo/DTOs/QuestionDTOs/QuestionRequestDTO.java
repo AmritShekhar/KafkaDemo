@@ -1,7 +1,6 @@
 package com.amritspring.QuoraDemo.DTOs.QuestionDTOs;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 
 @Getter
